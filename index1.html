@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Client</title>
+</head>
+<body>
+  <textarea id="messageInput" placeholder="Type your message..."></textarea>
+  <button id="sendMessageBtn">Send</button>
+  <div id="messageContainer"></div>
+
+  <script>
+    const messageInput = document.getElementById('messageInput');
+    const sendMessageBtn = document.getElementById('sendMessageBtn');
+    const messageContainer = document.getElementById('messageContainer');
+
+    const socket = new WebSocket('ws://192.168.1.53:3000'); // Replace with your desktop's IP address and port number
+
+    socket.addEventListener('message', function(event) {
+      const message = event.data;
+      showMessage(message);
+    });
+
+    function showMessage(message) {
+      const messageElement = document.createElement('div');
+      messageElement.textContent = message;
+      messageContainer.appendChild(messageElement);
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+    sendMessageBtn.addEventListener('click', function() {
+      const message = messageInput.value;
+      if (message.trim() !== '') {
+        socket.send(message);
+        messageInput.value = '';
+        showMessage('You: ' + message);
+      }
+    });
+  </script>
+</body>
+</html>
